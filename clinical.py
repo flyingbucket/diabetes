@@ -129,7 +129,6 @@ def plot_metric_grouped_bars_with_lines(
         sub = df[df[cluster_col] == cl]
         for j, col in enumerate(cols):
             means[i, j] = pd.to_numeric(sub[col], errors="coerce").mean()
-
     # Style: match your example (yellow/purple for 2 clusters)
     # If clusters != 2, fall back to tab10.
     if len(cluster_order) == 2:
@@ -152,7 +151,7 @@ def plot_metric_grouped_bars_with_lines(
     # Bars + per-cluster line (connect bar centers)
     for i, cl in enumerate(cluster_order):
         x_sub = x + offsets[i]
-        ax.bar(
+        bars = ax.bar(
             x_sub,
             means[i, :],
             width=bar_width * 0.95,
@@ -169,7 +168,17 @@ def plot_metric_grouped_bars_with_lines(
             color=colors[i],
             alpha=0.95,
         )
-
+        # 添加数值标注
+        for bar in bars:
+            height = bar.get_height()
+            ax.text(
+                bar.get_x() + bar.get_width() / 2,  # x 坐标在 bar 中心
+                height + 0.01 * height,  # y 坐标略高于 bar 顶
+                f"{height:.2f}",  # 显示两位小数
+                ha="center",
+                va="bottom",
+                fontsize=8,
+            )
     # Labels & grid
     ax.set_xticks(x)
     ax.set_xticklabels([tp[1] for tp in timepoints])

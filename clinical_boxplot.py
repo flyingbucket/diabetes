@@ -240,6 +240,55 @@ def plot_metric_boxplots_with_mean_lines_and_p(
     return True
 
 
+def export_boxplot_stats_to_csv(
+    df: pd.DataFrame, cluster_col: str, metric_base: str, out_csv: str
+):
+    """
+    导出箱线图各分位数和均值到 CSV。
+
+    输出 CSV 结构：
+        cluster, timepoint, min, Q1, median, Q3, max, mean
+    """
+    time_order = [("baseline", "Baseline"), ("3m", "3 months"), ("6m", "6 months")]
+    cols = [f"{metric_base}_baseline", f"{metric_base}_3m", f"{metric_base}_6m"]
+    if not all(c in df.columns for c in cols):
+        raise ValueError(f"Columns for metric {metric_base} missing")
+
+    clusters = sorted(df[cluster_col].dropna().unique().tolist())
+    records = []
+
+    for cl in clusters:
+        df_cl = df[df[cluster_col] == cl]
+        for col, (tp_code, tp_label) in zip(cols, time_order):
+            vals = pd.to_numeric(df_cl[col], errors="coerce").dropna()
+            if len(vals) == 0:
+                stats = [np.nan] * 6
+            else:
+                stats = [
+                    vals.min(),
+                    np.percentile(vals, 25),
+                    np.median(vals),
+                    np.percentile(vals, 75),
+                    vals.max(),
+                    vals.mean(),
+                ]
+            record = {
+                "cluster": cl,
+                "timepoint": tp_label,
+                "min": stats[0],
+                "Q1": stats[1],
+                "median": stats[2],
+                "Q3": stats[3],
+                "max": stats[4],
+                "mean": stats[5],
+            }
+            records.append(record)
+
+    df_out = pd.DataFrame(records)
+    df_out.to_csv(out_csv, index=False, encoding="utf-8-sig")
+    print(f"[OK] Exported boxplot stats to {out_csv}")
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", required=True)
@@ -310,6 +359,12 @@ def main():
             metric_base=m,
             out_path=out_path,
             p_test=args.ptest,
+        )
+        export_boxplot_stats_to_csv(
+            df,
+            cluster_col="cluster_kmeans_bestk",
+            metric_base="egfr",
+            out_csv=f"clinical_boxplots/{m}_boxplot_stats.csv",
         )
         if ok:
             made_any = True
