@@ -131,7 +131,6 @@ def main():
             "Please verify your Excel headers match the keys in FEATURE_NAME_MAP."
         )
 
-    # Optional: sort by correlation (like many paper figures)
     res = res.sort_values("corr", ascending=False).reset_index(drop=True)
 
     # ---- Plot (English) ----
@@ -150,20 +149,40 @@ def main():
     ax.set_xticklabels(res["feature_label"].tolist(), rotation=35, ha="center")
     ax.tick_params(axis="x", labelsize=9)
 
-    # Stars
+    # Stars + numeric values
+    # ---- 调整坐标轴范围 ----
     y_vals = res["corr"].values
-    scale = np.nanmax(np.abs(y_vals)) if len(y_vals) else 1.0
-    offset = 0.03 * (scale if np.isfinite(scale) and scale > 0 else 1.0)
+    ymax = np.nanmax(y_vals)
+    ymin = np.nanmin(y_vals)
+
+    y_range = ymax - ymin
+    if y_range == 0:
+        y_range = 1.0
+
+    margin = 0.20 * y_range
+    ax.set_ylim(ymin - margin, ymax + margin)
+
+    # ---- offset ----
+    value_offset = 0.03 * y_range
+    star_offset = 0.08 * y_range
 
     for i, (r, p) in enumerate(zip(res["corr"].values, res["p"].values)):
-        st = stars_from_p(p)
-        if not st:
-            continue
+        # ---- 数值 ----
+        value_text = f"{r:.2f}"  # 保留两位小数
         if r >= 0:
-            ax.text(i, r + offset, st, ha="center", va="bottom", fontsize=12)
+            ax.text(
+                i, r + value_offset, value_text, ha="center", va="bottom", fontsize=9
+            )
         else:
-            ax.text(i, r - offset, st, ha="center", va="top", fontsize=12)
+            ax.text(i, r - value_offset, value_text, ha="center", va="top", fontsize=9)
 
+        # ---- 星号 ----
+        st = stars_from_p(p)
+        if st:
+            if r >= 0:
+                ax.text(i, r + star_offset, st, ha="center", va="bottom", fontsize=12)
+            else:
+                ax.text(i, r - star_offset, st, ha="center", va="top", fontsize=12)
     ax.grid(True, axis="y", alpha=0.25)
     fig.tight_layout()
     fig.savefig(args.out_png, bbox_inches="tight")

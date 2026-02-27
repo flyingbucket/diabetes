@@ -363,7 +363,7 @@ def main():
         export_boxplot_stats_to_csv(
             df,
             cluster_col="cluster_kmeans_bestk",
-            metric_base="egfr",
+            metric_base=m,
             out_csv=f"clinical_boxplots/{m}_boxplot_stats.csv",
         )
         if ok:
