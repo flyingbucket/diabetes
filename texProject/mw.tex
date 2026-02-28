@@ -1,0 +1,151 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[UTF8]{ctex}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{amsmath}
+\geometry{margin=2.5cm}
+\setstretch{1.5}
+
+\title{}
+\author{}
+\date{}
+
+\begin{document}
+\section{Wilcoxon Rank-Sum Test (Mann–Whitney U Test)}
+
+\subsection{1. Model Setup}
+
+Let
+\[
+X_1,\dots,X_{n_1} \overset{iid}{\sim} F,
+\qquad
+Y_1,\dots,Y_{n_2} \overset{iid}{\sim} G,
+\]
+with all observations mutually independent.
+
+We test
+
+\[
+H_0: F(x)=G(x)\quad \forall x
+\]
+
+versus
+
+\[
+H_1: F(x)\ne G(x).
+\]
+
+For continuous distributions, this is equivalent to
+
+\[
+H_0: \theta = P(X>Y)=\frac12.
+\]
+
+
+\subsection*{2. Definition of the U Statistic}
+
+Define
+
+\[
+U
+=
+\sum_{i=1}^{n_1}
+\sum_{j=1}^{n_2}
+I(X_i>Y_j),
+\]
+
+where $I(\cdot)$ is the indicator function.
+
+Then
+
+\[
+E(U)
+=
+\sum_{i,j}
+E[I(X_i>Y_j)]
+=
+n_1 n_2 P(X>Y).
+\]
+
+Under $H_0$,
+
+\[
+E(U)
+=
+\frac{n_1 n_2}{2}.
+\]
+
+
+\subsection*{3. Variance of U under $H_0$}
+
+Since
+\[
+U = \sum_{i,j} I(X_i>Y_j),
+\]
+it is a U-statistic of order $(1,1)$.
+
+Under continuity (no ties),
+
+\[
+\mathrm{Var}(U)
+=
+\frac{n_1 n_2 (n_1+n_2+1)}{12}.
+\]
+
+
+\subsection*{5. Rejection Region}
+
+For a two-sided test at level $\alpha$:
+
+\[
+\text{Reject } H_0
+\quad \text{if} \quad
+|Z| > z_{1-\alpha/2}.
+\]
+
+Equivalently,
+
+\[
+U \le u_L
+\quad \text{or} \quad
+U \ge u_U,
+\]
+
+where $u_L,u_U$ are determined from the null distribution.
+
+
+\subsection*{6. Definition of the p-value}
+
+Let $U_{\text{obs}}$ denote the observed value.
+
+The p-value is defined as
+
+\[
+p
+=
+P_{H_0}
+\Big(
+|U - E(U)|
+\ge
+|U_{\text{obs}} - E(U)|
+\Big).
+\]
+
+Under normal approximation,
+
+\[
+p
+=
+2
+\Phi\!\left(
+-
+\left|
+\frac{U_{\text{obs}} - E(U)}
+{\sqrt{\mathrm{Var}(U)}}
+\right|
+\right),
+\]
+
+where $\Phi(\cdot)$ is the standard normal cumulative distribution function.
+
+\end{document}

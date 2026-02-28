@@ -1,1 +1,3 @@
 *.zip
+texProject/*
+!texProject/mw.tex
