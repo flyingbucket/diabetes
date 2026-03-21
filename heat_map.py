@@ -24,17 +24,27 @@ from scipy.stats import pearsonr, spearmanr
 ORDINAL_MAP = {"低": 0.0, "中": 0.5, "高": 1.0, "差": 0.0, "无": np.nan}
 
 # --- Chinese -> English short names (edit to match your headers) ---
+# FEATURE_NAME_MAP = {
+#     "用药合理性评分（低中高）": "Rationality",
+#     "患者依从性评分（低中高）": "Adherence",
+#     "治疗方案优化干预数（新增、停用或剂量调整）": "Regimen changes",
+#     "GDMT（新四联）使用数量": "GDMT count",
+#     "药物相互作用或不良反应干预数": "DDI/ADR actions",
+#     "用药教育药物数量": "Education meds",
+#     "医生接受建议并执行数": "Accepted actions",
+#     # If you also want these included in the heatmap/bar plot, uncomment:
+#     # "临床指标基线eGFR(ml/min/1.73m2)": "eGFR baseline",
+#     # "临床指标随访6个月eGFR": "eGFR 6m",
+# }
+
 FEATURE_NAME_MAP = {
     "用药合理性评分（低中高）": "Rationality",
     "患者依从性评分（低中高）": "Adherence",
-    "治疗方案优化干预数（新增、停用或剂量调整）": "Regimen changes",
-    "GDMT（新四联）使用数量": "GDMT count",
+    "治疗方案优化干预数（新增、停用或剂量调整）": "Regimen optimization",
+    "GDMT（新四联）使用数量": "GDMT counts",
     "药物相互作用或不良反应干预数": "DDI/ADR actions",
-    "用药教育药物数量": "Education meds",
-    "医生接受建议并执行数": "Accepted actions",
-    # If you also want these included in the heatmap/bar plot, uncomment:
-    # "临床指标基线eGFR(ml/min/1.73m2)": "eGFR baseline",
-    # "临床指标随访6个月eGFR": "eGFR 6m",
+    "用药教育药物数量": "Medication education",
+    "医生接受建议并执行数": "Accept actions",
 }
 RESPONSE_NAME_EN = "Improvement"
 

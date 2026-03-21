@@ -27,13 +27,13 @@ from matplotlib.colors import ListedColormap
 
 # ---- Column mapping (Chinese -> English) for pharmacist intervention block ----
 INTERVENTION_COL_MAP = {
-    "用药合理性评分（低中高）": "med_rationality_score",
-    "患者依从性评分（低中高）": "adherence_score",
-    "治疗方案优化干预数（新增、停用或剂量调整）": "regimen_opt_interventions",
-    "GDMT（新四联）使用数量": "gdmt_count",
-    "药物相互作用或不良反应干预数": "ddi_adr_interventions",
-    "用药教育药物数量": "med_education_count",
-    "医生接受建议并执行数": "physician_acceptance_count",
+    "用药合理性评分（低中高）": "Rationality",
+    "患者依从性评分（低中高）": "Adherence",
+    "治疗方案优化干预数（新增、停用或剂量调整）": "Regimen optimization",
+    "GDMT（新四联）使用数量": "GDMT counts",
+    "药物相互作用或不良反应干预数": "DDI/ADR actions",
+    "用药教育药物数量": "Medication education",
+    "医生接受建议并执行数": "Accept actions",
 }
 
 # If you previously renamed columns to English, we also accept these names directly:
