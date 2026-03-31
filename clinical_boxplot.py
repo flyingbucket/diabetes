@@ -6,7 +6,7 @@ overlay mean-lines, and add p-value for 6m cluster difference.
 Includes BP as two metrics: SBP and DBP (two separate figures).
 
 Run:
-  python plot_clinical_boxplot_by_cluster.py \
+  python clinical_boxplot.py \
     --input "/mnt/data/糖肾MDT数据.xlsx" \
     --sheet "均一化" \
     --kmin 2 --kmax 6 \
@@ -67,7 +67,7 @@ CLINICAL_COL_MAP = {
 
 METRIC_LABELS = {
     "egfr": "eGFR (ml/min/1.73m²)",
-    "uacr": "UACR (g/g)",
+    "uacr": "UACR (mg/g)",
     "utp24h": "24h UTP (g)",
     "hba1c": "HbA1c (%)",
     "ldlc": "LDL-C (mmol/L)",
@@ -316,7 +316,12 @@ def main():
     )
     rename_map.update({k: v for k, v in CLINICAL_COL_MAP.items() if k in df.columns})
     df = df.rename(columns=rename_map)
-
+    uacr_cols = ["uacr_baseline", "uacr_3m", "uacr_6m"]
+    for col in uacr_cols:
+        if col in df.columns:
+            # 转换为数值（强制转换非数值为NaN），然后乘以 1000
+            df[col] = pd.to_numeric(df[col], errors="coerce") * 1000
+    print("[INFO] UACR columns converted from g/g to mg/g (x1000).")
     # ---- Split BP into SBP/DBP numeric columns (baseline/3m/6m) ----
     for tp in ["baseline", "3m", "6m"]:
         bp_col = f"bp_{tp}"
