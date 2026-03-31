@@ -5,11 +5,11 @@
    with two sub-bars by cluster, and overlay a line connecting bar tops per cluster.
 
 Run:
-  python plot_clinical_by_cluster.py \
-    --input "/mnt/data/糖肾MDT数据.xlsx" \
+  python clinical.py \
+    --input "糖肾MDT数据.xlsx" \
     --sheet "均一化" \
     --kmin 2 --kmax 6 \
-    --out_dir "/mnt/data/clinical_barplots"
+    --out_dir "./out_new/barplots"
 """
 
 import argparse
@@ -137,7 +137,7 @@ def plot_metric_grouped_bars_with_lines(
         cmap = plt.cm.get_cmap("tab10", len(cluster_order))
         colors = [cmap(i) for i in range(len(cluster_order))]
 
-    fig, ax = plt.subplots(figsize=(7.2, 4.6), dpi=500)
+    fig, ax = plt.subplots(figsize=(7.2, 6.0), dpi=500)
 
     x = np.arange(len(timepoints))  # group centers
     total_width = 0.78
@@ -193,6 +193,7 @@ def plot_metric_grouped_bars_with_lines(
 
     fig.tight_layout()
     fig.savefig(out_path, bbox_inches="tight")
+    # fig.savefig(out_path)
     plt.close(fig)
     return True
 
@@ -245,6 +246,10 @@ def main():
         X, args.kmin, args.kmax
     )
     df["cluster_kmeans_bestk"] = labels
+
+    # rename legacy
+    cluster_map = {0: "H-intensity", 1: "L-intensity"}
+    df["cluster_kmeans_bestk"] = df["cluster_kmeans_bestk"].map(cluster_map)
 
     print(f"[OK] Best k = {best_k}")
     for k, s in zip(k_values, sil_scores):
