@@ -7,11 +7,11 @@ Includes BP as two metrics: SBP and DBP (two separate figures).
 
 Run:
   python clinical_boxplot.py \
-    --input "/mnt/data/糖肾MDT数据.xlsx" \
+    --input "糖肾MDT数据.xlsx" \
     --sheet "均一化" \
     --kmin 2 --kmax 6 \
-    --out_dir "/mnt/data/clinical_boxplots" \
-    --save_csv "/mnt/data/with_cluster_labels.csv" \
+    --out_dir "clinical_boxplots" \
+    --save_csv "with_cluster_labels.csv" \
     --ptest mw
 """
 
@@ -218,7 +218,7 @@ def plot_metric_boxplots_with_mean_lines_and_p(
             linewidth=2,
             color=colors[i],
             alpha=0.95,
-            label=f"Cluster {cl}",
+            label=f"{cl}",
         )
 
     # p-value at 6m (cluster 0 vs 1)
@@ -227,7 +227,8 @@ def plot_metric_boxplots_with_mean_lines_and_p(
 
     ylabel = METRIC_LABELS.get(metric_base, metric_base)
     ax.set_ylabel(ylabel)
-    ax.set_title(f"{ylabel} by cluster over time\n({p_text})")
+    # ax.set_title(f"{ylabel} by cluster over time\n({p_text})")
+    ax.set_title(f"{ylabel} by cluster over time")
 
     ax.set_xticks(x)
     ax.set_xticklabels([t[1] for t in time_order])
@@ -343,6 +344,9 @@ def main():
         X, args.kmin, args.kmax
     )
     df["cluster_kmeans_bestk"] = labels
+    # rename legacy
+    cluster_map = {0: "H-intensity", 1: "L-intensity"}
+    df["cluster_kmeans_bestk"] = df["cluster_kmeans_bestk"].map(cluster_map)
 
     print(f"[OK] Best k = {best_k}")
     for k, s in zip(k_values, sil_scores):

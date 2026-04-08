@@ -77,7 +77,7 @@ def _kmeans_fit_predict(X, k, random_state=42):
     try:
         km = KMeans(n_clusters=k, random_state=random_state, n_init="auto")
     except TypeError:
-        km = KMeans(n_clusters=k, random_state=random_state, n_init=10)
+        km = KMeans(n_clusters=k, random_state=random_state, n_init=str(10))
     labels = km.fit_predict(X)
     return labels, km
 
@@ -155,7 +155,7 @@ def plot_metric_grouped_bars_with_lines(
             x_sub,
             means[i, :],
             width=bar_width * 0.95,
-            label=f"Cluster {cl}",
+            label=f"{cl}",
             color=colors[i],
             alpha=0.9,
         )
