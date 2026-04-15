@@ -6,7 +6,10 @@ import statsmodels.formula.api as smf
 from patsy import cr  # 用于生成样条基函数
 import os
 
-out_dir = "outcome_rcs"
+plt.rcParams["pdf.fonttype"] = 42
+plt.rcParams["ps.fonttype"] = 42
+plt.rcParams["svg.fonttype"] = "none"
+out_dir = "outcome_rcs_pdf"
 save_dir = f"./out_new/{out_dir}"
 os.makedirs(save_dir, exist_ok=True)
 
@@ -91,5 +94,6 @@ for y_col in y_cols:
 
     # 导出
     plt.tight_layout()
-    plt.savefig(f"{save_dir}/rcs_plot_{y_col.lower()}.png", dpi=500)
+    # plt.savefig(f"{save_dir}/rcs_plot_{y_col.lower()}.png", dpi=500)
+    plt.savefig(f"{save_dir}/rcs_plot_{y_col.lower()}.pdf")
     plt.show()

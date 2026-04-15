@@ -1,7 +1,14 @@
+import os
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
+plt.rcParams["pdf.fonttype"] = 42
+plt.rcParams["ps.fonttype"] = 42
+plt.rcParams["svg.fonttype"] = "none"
+out_dir = "out_new"
+job_dir = "inter_pdf"
+os.makedirs(f"{out_dir}/{job_dir}", exist_ok=True)
 # 1. 数据预处理
 df = pd.read_excel("干预措施.xlsx", sheet_name="Sheet1").dropna().copy()
 cluster_map = {0: "H-intensity", 1: "L-intensity"}
@@ -29,7 +36,8 @@ plt.title("Distribution of Rationality Levels by Cluster", fontsize=14)
 plt.ylabel("Counts")
 plt.xlabel("Rationality")
 plt.tight_layout()
-plt.savefig("./out_new/inter/rationality_dist.png", dpi=500)
+# plt.savefig("./out_new/inter/rationality_dist.png", dpi=500)
+plt.savefig(f"{out_dir}/{job_dir}/rationality_dist.pdf")
 plt.close()
 
 # --- 图 2：Adherence 分布图 (新增) ---
@@ -46,7 +54,8 @@ plt.title("Distribution of Adherence Levels by Cluster", fontsize=14)
 plt.ylabel("Counts")
 plt.xlabel("Adherence")
 plt.tight_layout()
-plt.savefig("./out_new/inter/adherence_dist.png", dpi=500)
+# plt.savefig("./out_new/inter/adherence_dist.png", dpi=500)
+plt.savefig(f"{out_dir}/{job_dir}/adherence_dist.pdf")
 plt.close()
 
 # --- 图 3：Intervention 均值对比图 ---
@@ -86,5 +95,29 @@ plt.title("Mean Value of Interventions by Cluster", fontsize=14)
 plt.ylabel("Average Counts")
 plt.xticks(rotation=15)  # 建议保留轻微旋转，否则长标签会重叠
 plt.tight_layout()
-plt.savefig("./out_new/inter/intervention_means.png", dpi=500)
+# plt.savefig("./out_new/inter/intervention_means.png", dpi=500)
+plt.savefig(f"{out_dir}/{job_dir}/intervention_means.pdf")
 plt.close()
+
+# --- 导出 Rationality 数据 ---
+rationality_counts = (
+    df.groupby(["Cluster", "Rationality"]).size().reset_index(name="Counts")
+)
+rationality_counts.to_csv(f"{out_dir}/{job_dir}/rationality_counts.csv", index=False)
+
+# --- 导出 Adherence 数据 ---
+adherence_counts = (
+    df.groupby(["Cluster", "Adherence"]).size().reset_index(name="Counts")
+)
+adherence_counts.to_csv(f"{out_dir}/{job_dir}/adherence_counts.csv", index=False)
+# --- 导出 Intervention 均值数据 ---
+intervention_means = (
+    df_melted.groupby(["Intervention", "Cluster"])["Mean_Value"].mean().reset_index()
+)
+
+# 如果你希望表格格式更直观（横向对比 L/H-intensity），可以使用 pivot
+intervention_pivot = intervention_means.pivot(
+    index="Intervention", columns="Cluster", values="Mean_Value"
+)
+
+intervention_pivot.to_csv(f"{out_dir}/{job_dir}/intervention_means.csv")
