@@ -3,12 +3,12 @@
 Cluster pharmacist intervention features, plot PCA scatter, silhouette curve, and feature heatmap.
 
 Run:
-  python cluster_intervention.py \
-    --input "/mnt/data/糖肾MDT数据.xlsx" \
+  python clustering.py \
+    --input "糖肾MDT数据.xlsx" \
     --sheet "均一化" \
     --kmin 2 --kmax 6 \
-    --out_png "/mnt/data/pharm_intervention_clustering.png" \
-    --out_csv "/mnt/data/pharm_intervention_with_clusters.csv"
+    --out_pdf "out_new/pharm_intervention_clustering.pdf" \
+    --out_csv "out_new/pharm_intervention_with_clusters.csv"
 """
 
 import argparse
@@ -62,7 +62,7 @@ def main():
         "--kmax", type=int, default=6, help="Max k for silhouette (default: 6)"
     )
     parser.add_argument(
-        "--out_png", default="pharm_intervention_clustering.png", help="Output PNG path"
+        "--out_pdf", default="pharm_intervention_clustering.pdf", help="Output pdf path"
     )
     parser.add_argument(
         "--out_csv", default="", help="Optional: save CSV with best-k cluster labels"
@@ -193,8 +193,8 @@ def main():
     fig.tight_layout(rect=[0, 0, 1, 0.96])
 
     # Save figure
-    fig.savefig(args.out_png, bbox_inches="tight")
-    print(f"[OK] Saved figure: {args.out_png}")
+    fig.savefig(args.out_pdf, bbox_inches="tight")
+    print(f"[OK] Saved figure: {args.out_pdf}")
     print(f"[OK] Best k = {best_k}, silhouette = {sil_scores[best_idx]:.4f}")
 
     # Optionally save CSV with cluster label

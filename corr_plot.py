@@ -74,7 +74,7 @@ def main():
     parser.add_argument("--response_col", default="改善")
     parser.add_argument("--binary_response", action="store_true")
     parser.add_argument("--method", choices=["pearson", "spearman"], default="spearman")
-    parser.add_argument("--out_png", default="./correlation_plot.png")
+    parser.add_argument("--out_pdf", default="./correlation_plot.pdf")
     args = parser.parse_args()
 
     df = pd.read_excel(args.input, sheet_name=args.sheet)
@@ -185,8 +185,8 @@ def main():
                 ax.text(i, r - star_offset, st, ha="center", va="top", fontsize=12)
     ax.grid(True, axis="y", alpha=0.25)
     fig.tight_layout()
-    fig.savefig(args.out_png, bbox_inches="tight")
-    print(f"[OK] Saved: {args.out_png}")
+    fig.savefig(args.out_pdf, bbox_inches="tight")
+    print(f"[OK] Saved: {args.out_pdf}")
 
     # Console table (English label included)
     print(res[["feature", "feature_label", "corr", "p"]].to_string(index=False))

@@ -10,7 +10,7 @@ Run:
     --input "糖肾MDT数据.xlsx" \
     --sheet "均一化" \
     --kmin 2 --kmax 6 \
-    --out_dir "clinical_boxplots" \
+    --out_dir "out_new/boxplots_pdf" \
     --save_csv "with_cluster_labels.csv" \
     --ptest mw
 """
@@ -361,7 +361,7 @@ def main():
 
     made_any = False
     for m in metric_bases:
-        out_path = os.path.join(args.out_dir, f"{m}_boxplot.png")
+        out_path = os.path.join(args.out_dir, f"{m}_boxplot.pdf")
         ok = plot_metric_boxplots_with_mean_lines_and_p(
             df=df,
             cluster_col="cluster_kmeans_bestk",

@@ -6,8 +6,8 @@
 - English-only labels via FEATURE_NAME_MAP (unmapped columns are dropped from plots)
 - Supports Pearson / Spearman correlations
 - Outputs:
-    --out_bar  : bar plot PNG
-    --out_heat : heatmap PNG
+    --out_bar  : bar plot pdf
+    --out_heat : heatmap pdf
 
 Run:
   python corr_bar_and_heatmap.py --input ./相关性.xlsx --sheet Sheet1 --response_col 改善
@@ -100,7 +100,7 @@ def compute_feature_response_table(
     return pd.DataFrame(rows, columns=["feature", "corr", "p"]).dropna(subset=["corr"])
 
 
-def plot_bar(res: pd.DataFrame, method: str, out_png: str, title: str):
+def plot_bar(res: pd.DataFrame, method: str, out_pdf: str, title: str):
     # sort like paper figures
     res = res.sort_values("corr", ascending=False).reset_index(drop=True)
 
@@ -133,11 +133,11 @@ def plot_bar(res: pd.DataFrame, method: str, out_png: str, title: str):
 
     ax.grid(True, axis="y", alpha=0.25)
     fig.tight_layout()
-    fig.savefig(out_png, bbox_inches="tight")
+    fig.savefig(out_pdf, bbox_inches="tight")
     plt.close(fig)
 
 
-def plot_heatmap(corr_mat: pd.DataFrame, out_png: str, title: str):
+def plot_heatmap(corr_mat: pd.DataFrame, out_pdf: str, title: str):
     labels = corr_mat.columns.tolist()
     M = corr_mat.values.astype(float)
 
@@ -168,7 +168,7 @@ def plot_heatmap(corr_mat: pd.DataFrame, out_png: str, title: str):
     cbar.set_label("Correlation")
 
     fig.tight_layout()
-    fig.savefig(out_png, bbox_inches="tight")
+    fig.savefig(out_pdf, bbox_inches="tight")
     plt.close(fig)
 
 
@@ -178,8 +178,8 @@ def main():
     parser.add_argument("--sheet", default="Sheet1")
     parser.add_argument("--response_col", default="改善")
     parser.add_argument("--method", choices=["pearson", "spearman"], default="spearman")
-    parser.add_argument("--out_bar", default="./corr_bar.png")
-    parser.add_argument("--out_heat", default="./corr_heatmap.png")
+    parser.add_argument("--out_bar", default="./corr_bar.pdf")
+    parser.add_argument("--out_heat", default="./corr_heatmap.pdf")
     args = parser.parse_args()
 
     df = pd.read_excel(args.input, sheet_name=args.sheet)
@@ -210,7 +210,7 @@ def main():
     plot_bar(
         res=res,
         method=args.method,
-        out_png=args.out_bar,
+        out_pdf=args.out_bar,
         title="Correlates of improvement",
     )
     print(f"[OK] Saved bar plot: {args.out_bar}")
@@ -223,7 +223,7 @@ def main():
 
     plot_heatmap(
         corr_mat=corr_mat,
-        out_png=args.out_heat,
+        out_pdf=args.out_heat,
         title="Feature correlation matrix",
     )
     print(f"[OK] Saved heatmap: {args.out_heat}")

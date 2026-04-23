@@ -264,7 +264,7 @@ def main():
     metric_bases = ["egfr", "uacr", "utp24h", "hba1c", "ldlc"]
     made_any = False
     for m in metric_bases:
-        out_path = os.path.join(args.out_dir, f"{m}_barplot.png")
+        out_path = os.path.join(args.out_dir, f"{m}_barplot.pdf")
         ok = plot_metric_grouped_bars_with_lines(
             df=df,
             cluster_col="cluster_kmeans_bestk",
