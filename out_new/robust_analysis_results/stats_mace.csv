@@ -1,0 +1,5 @@
+,OR,P-value,Lower CI,Upper CI
+Intercept,0.17241379310294772,0.0002832222431786609,0.06674075414767258,0.44540275925519657
+"C(eGFR_status, Treatment(reference='Stable'))[T.Decline]",2.900000000015152,0.10120907311645982,0.8118125724134333,10.359534067187253
+"C(Cluster_Label, Treatment(reference='H-intensity'))[T.L-intensity]",0.7030303030347843,0.6233576582161218,0.17228563773150932,2.868791696702104
+"C(eGFR_status, Treatment(reference='Stable'))[T.Decline]:C(Cluster_Label, Treatment(reference='H-intensity'))[T.L-intensity]",459493289468.5448,0.9999246047400564,0.0,inf

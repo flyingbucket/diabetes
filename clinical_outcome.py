@@ -9,15 +9,21 @@ import os
 plt.rcParams["pdf.fonttype"] = 42
 plt.rcParams["ps.fonttype"] = 42
 plt.rcParams["svg.fonttype"] = "none"
-out_dir = "outcome_rcs_pdf"
+out_dir = "outcome_rcs_percentage_pdf"
 save_dir = f"./out_new/{out_dir}"
 os.makedirs(save_dir, exist_ok=True)
 
 # 加载数据
-df = pd.read_excel("预后.bak.xlsx", sheet_name="Sheet1")
-df = df.rename(
+df0 = pd.read_excel("预后.bak.xlsx", sheet_name="Sheet1")
+df = df0.rename(
     columns={
         "Change in eGFR, mL/min/1.73 m2": "eGFR_num",
+        "Initial dialysis": "Initial_dialysis",
+    }
+)
+df = df0.rename(
+    columns={
+        "Change in eGFR, %": "eGFR_percentage",
         "Initial dialysis": "Initial_dialysis",
     }
 )
@@ -25,7 +31,8 @@ df = df.rename(
 cluster_map = {0: "L-intensity", 1: "H-intensity"}
 df["Cluster_Label"] = df["cluster_kmeans_bestk"].map(cluster_map)
 
-x_col = "eGFR_num"
+# x_col = "eGFR_num"
+x_col = "eGFR_percentage"
 y_cols = ["MACE", "Readmission", "Initial_dialysis"]
 cluster_col = "cluster_kmeans_bestk"
 
@@ -44,7 +51,7 @@ for y_col in y_cols:
     # 构建 RCS 模型
     # cr(x, df=4) 表示使用 4 个结点的限制性立方样条
     # 交互项写为 cr(...) : cluster_col
-    formula = f"{y_col} ~ cr({x_col}, df=4) * {cluster_col}"
+    formula = f"{y_col} ~ cr({x_col}, df=3) * {cluster_col}"
 
     try:
         model = smf.logit(formula, data=df).fit(disp=0)
@@ -87,7 +94,8 @@ for y_col in y_cols:
 
     # 美化与保存
     plt.title(f"RCS Predicted Risk of {y_col}\n({p_str})", fontsize=14, pad=15)
-    plt.xlabel("Change in eGFR (mL/min/1.73 m²)", fontsize=12)
+    # plt.xlabel("Change in eGFR (mL/min/1.73 m²)", fontsize=12)
+    plt.xlabel("Change in eGFR, %", fontsize=12)
     plt.ylabel("Predicted Probability of Event ($p_i$)", fontsize=12)
     plt.ylim(0, 1)  # 概率范围 0-1
     plt.legend(title="Groups", frameon=True)
