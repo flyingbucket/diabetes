@@ -1,7 +1,7 @@
 import pandas as pd
 from scipy.stats import chi2_contingency
 
-df = pd.read_csv("outcome_new.csv")
+df = pd.read_csv("outcome.csv")
 
 target_cols = ["Readmission", "Initial dialysis", "MACE"]
 
