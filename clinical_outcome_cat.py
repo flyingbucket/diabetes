@@ -82,6 +82,120 @@ for y_col in y_cols:
         all_results.append(
             {"Outcome": y_col, "Group": group, "P_value": p_value, "OR": odds_ratio}
         )
+
+
+# --- 3. 六组 Fisher 精确检验 ---
+all_results = []
+
+egfr_groups = ["Decline", "Stable"]
+intensity_groups = ["L-intensity", "H-intensity"]
+
+for status in egfr_groups:
+    print(f"\\n{'=' * 60}")
+    print(f"eGFR status: {status} (threshold = {eGFR_threshold})")
+    print(f"{'=' * 60}")
+
+    # 先按 eGFR 状态分层，再比较两种用药强度
+    subset = df[
+        (df["eGFR_status"] == status) & (df["Cluster_Label"].isin(intensity_groups))
+    ].copy()
+
+    for y_col in y_cols:
+        # 行为用药强度，列为结局：0=未发生，1=发生
+        table = pd.crosstab(
+            subset["Cluster_Label"],
+            subset[y_col],
+        )
+
+        # 确保表格始终为 2×2，行列顺序固定
+        table = table.reindex(
+            index=intensity_groups,
+            columns=[0, 1],
+            fill_value=0,
+        )
+
+        l_no = int(table.loc["L-intensity", 0])
+        l_yes = int(table.loc["L-intensity", 1])
+        h_no = int(table.loc["H-intensity", 0])
+        h_yes = int(table.loc["H-intensity", 1])
+
+        l_total = l_no + l_yes
+        h_total = h_no + h_yes
+
+        l_rate = l_yes / l_total * 100 if l_total > 0 else np.nan
+        h_rate = h_yes / h_total * 100 if h_total > 0 else np.nan
+        risk_diff = (
+            h_rate - l_rate
+            if (not np.isnan(h_rate) and not np.isnan(l_rate))
+            else np.nan
+        )
+
+        # Fisher 精确检验：H-intensity vs L-intensity
+        # OR > 1 表示 H-intensity 组的结局发生优势较高
+        contingency_table = [
+            [h_yes, h_no],
+            [l_yes, l_no],
+        ]
+
+        if l_total == 0 or h_total == 0:
+            odds_ratio = np.nan
+            p_value = np.nan
+        else:
+            odds_ratio, p_value = fisher_exact(
+                contingency_table,
+                alternative="two-sided",
+            )
+
+        result = {
+            "eGFR_status": status,
+            "eGFR_threshold": eGFR_threshold,
+            "Outcome": y_col,
+            "L_events": l_yes,
+            "L_total": l_total,
+            "L_rate_percent": l_rate,
+            "H_events": h_yes,
+            "H_total": h_total,
+            "H_rate_percent": h_rate,
+            "Risk_difference_H_minus_L_percentage_points": risk_diff,
+            "OR_H_vs_L": odds_ratio,
+            "P_value": p_value,
+        }
+        all_results.append(result)
+
+        print(f"\\nOutcome: {y_col}")
+        print(
+            f"  L-intensity: {l_yes}/{l_total} ({l_rate:.2f}%)"
+            if l_total > 0
+            else "  L-intensity: 0 patients"
+        )
+        print(
+            f"  H-intensity: {h_yes}/{h_total} ({h_rate:.2f}%)"
+            if h_total > 0
+            else "  H-intensity: 0 patients"
+        )
+        print(
+            f"  OR (H vs L): {odds_ratio:.4f}"
+            if not np.isnan(odds_ratio)
+            else "  OR (H vs L): NA"
+        )
+        print(
+            f"  Fisher P-value: {p_value:.4f}"
+            if not np.isnan(p_value)
+            else "  Fisher P-value: NA"
+        )
+
+# --- 4. 保存结果 ---
+results_df = pd.DataFrame(all_results)
+
+csv_path = os.path.join(
+    save_dir,
+    "fisher_between_group_comparison_stratified_by_egfr.csv",
+)
+results_df.to_csv(csv_path, index=False)
+
+print(f"\\n六组检验完成，结果已保存至：{csv_path}")
+print(results_df.to_string(index=False))
+
 # --- 4. Visualization ---
 df_plot = pd.DataFrame(plot_list)
 
